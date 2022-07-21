@@ -1,6 +1,4 @@
-// import React, { Component } from "react";
-//{ pixabay, onClick }
-import ImageGalleryItem from "components/ImageGalleryItem/ImageGalleryItem";
+import ImageGalleryItem from "./ImageGalleryItem";
 
 const ImageGallery = ({ pixabay, selectedImg }) => {
     return (

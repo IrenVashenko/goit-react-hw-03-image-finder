@@ -27,8 +27,7 @@ class Modal extends Component {
     }
 
     render() {
-        const { selectedImage, tags } = this.props
-        console.log(selectedImage)
+        const { selectedImage, tags } = this.props;
         return createPortal(
             <div className="Overlay" onClick={this.hadleBackdropClick}>
                 <div className="Modal">

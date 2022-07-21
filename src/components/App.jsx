@@ -1,15 +1,18 @@
 import React, { Component } from "react";
-
-import galleryAPI from './serves/gallery-api'
+import axios from 'axios';
+import ScrollToTop from "react-scroll-to-top";
+import galleryAPI from '../services/gallery-api'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { toast } from 'react-toastify';
+
 import Searchbar from "./Searchbar/Searchbar";
-import ImageGallery from "./ImageGallery/ImageGallery";
+import ImageGallery from './Gallery/ImageGallery'
 import Loader from "components/Loader/Loader";
 import Modal from "./Modal/Modal";
 import Button from "./Button/Button";
 
+axios.defaults.baseURL = 'https://pixabay.com/api/';
 class App extends Component {
   state = {
     pixabayImg: '',
@@ -47,37 +50,22 @@ class App extends Component {
     const prevName = prevState.pixabayImg;
     const nextName = this.state.pixabayImg;
     if (prevName !== nextName || prevState.page !== page) {
-      console.log('Изменилось')
       this.setState({ status: 'pending' });
-
-      try {
-        const images = await galleryAPI(pixabayImg, page);
-        this.totallHits = images.total;
-        const imageHits = images.hits;
-        if (!imageHits.length) {
-          toast.warning('Nothing was found for your search. Try again!')
-        }
-
-        this.setState(({ pixabay }) => ({
-          pixabay: [...pixabay, ...imageHits],
-          status: 'resolved',
-        }))
-
-
-        window.addEventListener('scroll', this.hanleScroll)
-
-
-      } catch (error) {
-        this.setState({ status: 'reject' })
+      const images = await galleryAPI(pixabayImg, page);
+      this.totallHits = images.total;
+      const imageHits = images.hits;
+      if (!imageHits.length) {
+        toast.warning('Nothing was found for your search. Try again!')
       }
+      this.setState(({ pixabay }) => ({
+        pixabay: [...pixabay, ...imageHits],
+        status: 'resolved',
+      }))
     }
   }
-  hanleScroll = (e) => {
-    if (e.target.documentElement.scrollHeight - (e.target.documentElement.scrollTop + window.innerHeight) < 100) { }
-  }
+
 
   handleLoadBtn = () => {
-    console.log('click')
     this.setState(prevState => ({
       page: prevState.page + 1,
     }));
@@ -109,7 +97,10 @@ class App extends Component {
         <Searchbar onSubmit={this.handleImgSubmit} status={this.state.status} />
         <ImageGallery pixabay={pixabay} selectedImg={this.handleSelectedImg} />
         {status === 'pending' && <Loader />}
-        {pixabay.length > 0 && limit !== this.totallHits && <Button onClick={this.handleLoadBtn} />}
+        {pixabay.length > 0 && limit !== this.totallHits && (
+          <Button onClick={this.handleLoadBtn} />
+        )}
+        <ScrollToTop smooth top="5" color="blue" />
 
         <ToastContainer autoClose={3000} />
       </div>
